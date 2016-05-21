@@ -819,19 +819,31 @@ var SampleApp = function() {
     };
 
 
-    /**
-     *  Initialize the server (express) and create the routes and register
-     *  the handlers.
-     */
-    self.initializeServer = function() {
-        self.createRoutes();
-        self.app = express();
+	 /**
+	 *  Initialize the server (express) and create the routes and register
+	 *  the handlers.
+ 	*/
+	self.initializeServer = function() {
+  	  self.createRoutes();
+  	  self.app = express.createServer();
 
-        //  Add handlers for the app (from the routes).
-        for (var r in self.routes) {
-            self.app.get(r, self.routes[r]);
-        }
-    };
+
+	  self.app.configure(function(){
+                       //self.app.use(express.cookieParser());
+                       //self.app.use.(express.session({secret:"secret",key:"express.sid"}));
+                       ['css', 'img', 'js', 'plugin', 'lib'].forEach(function (dir){
+                                                                     self.app.use('/'+dir, express.static(__dirname+'/'+dir));
+                                                                     });
+                       self.app.set('views', __dirname + '/views');
+                       self.app.set('view engine', 'ejs');
+                       });
+
+
+    //  Add handlers for the app (from the routes).
+    for (var r in self.routes) {
+        self.app.get(r, self.routes[r]);
+  	  }
+	};
 
 
     /**
